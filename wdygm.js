@@ -58,9 +58,7 @@ export class Schema {
  * @returns {Schema<T[]>}
  */
 export function array(s) {
-    /**
-     * @type {Schema<T[]>["validate"]}
-     */
+    /** @type {Schema<T[]>["validate"]} */
     const validator = (v) => {
         if (!Array.isArray(v)) {
             return false;
@@ -78,9 +76,7 @@ export function array(s) {
     return new Schema(validator);
 }
 
-/**
- * @returns {Schema<boolean>}
- */
+/** @returns {Schema<boolean>} */
 export function boolean() {
     return new Schema(
         /** @type {Schema<boolean>["validate"]} */
@@ -90,9 +86,7 @@ export function boolean() {
     );
 }
 
-/**
- * @returns {Schema<number>}
- */
+/** @returns {Schema<number>} */
 export function number() {
     return new Schema(
         /** @type {Schema<number>["validate"]} */
@@ -102,9 +96,7 @@ export function number() {
     );
 }
 
-/**
- * @returns {Schema<string>}
- */
+/** @returns {Schema<string>} */
 export function string() {
     return new Schema(
         /** @type {Schema<string>["validate"]} */
@@ -114,9 +106,7 @@ export function string() {
     );
 }
 
-/**
- * @returns {Schema<undefined>}
- */
+/** @returns {Schema<undefined>} */
 export function undefined() {
     return new Schema(
         /** @type {Schema<undefined>["validate"]} */

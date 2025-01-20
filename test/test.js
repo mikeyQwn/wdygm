@@ -58,7 +58,7 @@ class TF {
 }
 
 function runTests() {
-    const tests = [testBoolean, testNumber, testString, testArray];
+    const tests = [testBoolean, testNumber, testString, testArray, testOr];
     for (let i = 0; i < tests.length; ++i) {
         const testFn = tests[i];
         const tf = new TF(testFn.name);
@@ -178,6 +178,30 @@ function testArray(tf) {
 
     for (const [input, schema, expected] of cases) {
         const s = w.array(schema);
+        const got = s.validate(input);
+        tf.assertEq(got, expected, `Input = ${input}`);
+    }
+
+    return true;
+}
+
+/**
+ * @param {TF} tf
+ * @return {boolean}
+ */
+function testOr(tf) {
+    /**
+     * @type [any, w.Schema<any>, boolean][]
+     */
+    const cases = [
+        [true, w.number().or(w.string()), false],
+        [42, w.number().or(w.string()), true],
+        ["", w.number().or(w.string()), true],
+        [undefined, w.number().or(w.undefined()), true],
+        ["", w.number().or(w.undefined()), false],
+    ];
+
+    for (const [input, s, expected] of cases) {
         const got = s.validate(input);
         tf.assertEq(got, expected, `Input = ${input}`);
     }
