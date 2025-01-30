@@ -23,11 +23,13 @@ export class Schema {
 
     /**
      * @param {unknown} v
+     * @returns T
      */
     validate_throwing(v) {
         if (!this.validate(v)) {
             throw "validation error";
         }
+        return v;
     }
 
     /**
