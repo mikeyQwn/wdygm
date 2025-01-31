@@ -58,7 +58,14 @@ class TF {
 }
 
 function runTests() {
-    const tests = [testBoolean, testNumber, testString, testArray, testOr];
+    const tests = [
+        testBoolean,
+        testNumber,
+        testString,
+        testArray,
+        testOr,
+        testObject,
+    ];
     for (let i = 0; i < tests.length; ++i) {
         const testFn = tests[i];
         const tf = new TF(testFn.name);
@@ -204,6 +211,72 @@ function testOr(tf) {
     for (const [input, s, expected] of cases) {
         const got = s.validate(input);
         tf.assertEq(got, expected, `Input = ${input}`);
+    }
+
+    return true;
+}
+
+/**
+ * @param {TF} tf
+ * @return {boolean}
+ */
+function testObject(tf) {
+    /**
+     * @type [any, w.Schema<any>, boolean][]
+     */
+    const cases = [
+        [
+            { hello: "asdkj", world: 42 },
+            w.object({
+                hello: w.string(),
+                world: w.number(),
+            }),
+            true,
+        ],
+        [
+            { hello: "asdkj", world: "dklj" },
+            w.object({
+                hello: w.string(),
+                world: w.number(),
+            }),
+            false,
+        ],
+        [
+            { foo: "asdkj" },
+            w.object({
+                hello: w.string(),
+            }),
+            false,
+        ],
+        [
+            { foo: "asdkj" },
+            w.object({
+                foo: w.string(),
+            }),
+            true,
+        ],
+        [
+            {
+                foo: "string",
+                bar: {
+                    fiz: "foo",
+                    buzz: 42,
+                },
+            },
+            w.object({
+                foo: w.string(),
+                bar: w.object({
+                    fiz: w.string(),
+                    buzz: w.number(),
+                }),
+            }),
+            true,
+        ],
+    ];
+
+    for (const [input, s, expected] of cases) {
+        const got = s.validate(input);
+        tf.assertEq(got, expected, `Input = ${JSON.stringify(input)}`);
     }
 
     return true;

@@ -14,7 +14,7 @@ export class Schema {
     }
     /**
      * @param {unknown} v
-     * @return {v is T}
+     * @returns {v is T}
      */
     validate(v) {
         v;
@@ -25,7 +25,7 @@ export class Schema {
      * @param {unknown} v
      * @returns T
      */
-    validate_throwing(v) {
+    validateThrowing(v) {
         if (!this.validate(v)) {
             throw "validation error";
         }
@@ -114,6 +114,39 @@ export function undefined() {
         /** @type {Schema<undefined>["validate"]} */
         (v) => {
             return typeof v === "undefined";
+        },
+    );
+}
+
+/**
+ * @template T
+ * @typedef {T extends Schema<infer U> ? U : never } ExtractInner<T>
+ */
+
+/**
+ * @template U
+ * @param {Record<string, Schema<any>> & U} inner
+ * @returns {Schema<{[K in keyof U]: ExtractInner<inner[K]>}>}
+ */
+export function object(inner) {
+    return new Schema(
+        /** @type {Schema<{[K in keyof U]: ExtractInner<inner[K]>}>["validate"]} */
+        (v) => {
+            if (typeof v !== "object" || !v) {
+                return false;
+            }
+
+            for (const [key, value] of Object.entries(v)) {
+                if (!(key in inner)) {
+                    return false;
+                }
+
+                if (!inner[key].validate(value)) {
+                    return false;
+                }
+            }
+
+            return true;
         },
     );
 }
