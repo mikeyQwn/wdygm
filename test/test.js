@@ -92,18 +92,18 @@ function runTests() {
  */
 function testBoolean(tf) {
     const cases = [
-        [true, true],
-        [false, true],
-        ["hello", false],
-        [{}, false],
-        [Boolean(), true],
-        [Boolean(false), true],
+        ["true", true, true],
+        ["false", false, true],
+        ["string", "hello", false],
+        ["empty object", {}, false],
+        ["empty constructor", Boolean(), true],
+        ["constructor with param", Boolean(false), true],
     ];
 
-    for (const [input, expected] of cases) {
+    for (const [tcName, input, expected] of cases) {
         const s = w.boolean();
         const got = s.validate(input);
-        tf.assertEq(got, expected, `Input = ${input}`);
+        tf.assertEq(got, expected, `Testcase = ${tcName} Input = ${input}`);
     }
 
     return true;
@@ -115,18 +115,19 @@ function testBoolean(tf) {
  */
 function testNumber(tf) {
     const cases = [
-        [true, false],
-        [0o123, true],
-        [0, true],
-        [1, true],
-        [-1, true],
-        [1.2, true],
+        ["boolean", true, false],
+        ["number", 0o123, true],
+        ["zero", 0, true],
+        ["one", 1, true],
+        ["negative", -1, true],
+        ["float", 1.2, true],
+        ["bigint", 1n, false],
     ];
 
-    for (const [input, expected] of cases) {
+    for (const [tcName, input, expected] of cases) {
         const s = w.number();
         const got = s.validate(input);
-        tf.assertEq(got, expected, `Input = ${input}`);
+        tf.assertEq(got, expected, `Testcase = ${tcName} Input = ${input}`);
     }
 
     return true;
@@ -138,18 +139,17 @@ function testNumber(tf) {
  */
 function testString(tf) {
     const cases = [
-        [true, false],
-        ["", true],
-        ["hello", true],
-        [{}, false],
-        ["true", true],
-        [Boolean(false), false],
+        ["boolean", true, false],
+        ["empty string", "", true],
+        ["non-empty string", "hello", true],
+        ["empty object", {}, false],
+        ["false boolean", Boolean(false), false],
     ];
 
-    for (const [input, expected] of cases) {
+    for (const [tcName, input, expected] of cases) {
         const s = w.string();
         const got = s.validate(input);
-        tf.assertEq(got, expected, `Input = ${input}`);
+        tf.assertEq(got, expected, `Testcase = ${tcName} Input = ${input}`);
     }
 
     return true;
@@ -161,32 +161,43 @@ function testString(tf) {
  */
 function testArray(tf) {
     /**
-     * @type [any, w.Schema<any>, boolean][]
+     * @type [string, any, w.Schema<any>, boolean][]
      */
     const cases = [
-        [true, w.number(), false],
-        ["", w.number(), false],
-        ["hello", w.number(), false],
-        [{}, w.number(), false],
-        ["true", w.number(), false],
-        [Boolean(false), w.number(), false],
-        [[1, 2], w.number(), true],
-        [[], w.number(), true],
-        [["foo", "bar", 2], w.string(), false],
-        [["foo", "bar", "baz"], w.string(), true],
-        [[[], ["foo", "bar"], ["bar", "baz"]], w.array(w.string()), true],
-        [[[], ["foo", "bar"], [1, "baz"]], w.array(w.string()), false],
+        ["boolean", true, w.number(), false],
+        ["empty string", "", w.number(), false],
+        ["non-empty string", "hello", w.number(), false],
+        ["empty object", {}, w.number(), false],
+        ["string", "true", w.number(), false],
+        ["false boolean", Boolean(false), w.number(), false],
+        ["number array", [1, 2], w.number(), true],
+        ["empty array", [], w.number(), true],
+        ["mixed type array", ["foo", "bar", 2], w.string(), false],
+        ["string array", ["foo", "bar", "baz"], w.string(), true],
         [
+            "2d array with empty rows",
+            [[], ["foo", "bar"], ["bar", "baz"]],
+            w.array(w.string()),
+            true,
+        ],
+        [
+            "2d array with mixed types",
+            [[], ["foo", "bar"], [1, "baz"]],
+            w.array(w.string()),
+            false,
+        ],
+        [
+            "mixed type array with undefined",
             [[], ["foo", "bar"], [undefined, "baz"]],
             w.array(w.string().optional()),
             true,
         ],
     ];
 
-    for (const [input, schema, expected] of cases) {
+    for (const [tcName, input, schema, expected] of cases) {
         const s = w.array(schema);
         const got = s.validate(input);
-        tf.assertEq(got, expected, `Input = ${input}`);
+        tf.assertEq(got, expected, `Testcase = ${tcName} Input = ${input}`);
     }
 
     return true;
