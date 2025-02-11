@@ -45,6 +45,10 @@ if (schema.validate(obj)) {
 const validatedObj = schema.validateThrowing(obj);
 ```
 
+### Examples
+
+An http server example is located in the `examples` directory
+
 ### Testing
 
 Tests are located in `test/test.js` file and are run with `node test/test.js`

@@ -209,19 +209,24 @@ function testArray(tf) {
  */
 function testOr(tf) {
     /**
-     * @type [any, w.Schema<any>, boolean][]
+     * @type [string, any, w.Schema<any>, boolean][]
      */
     const cases = [
-        [true, w.number().or(w.string()), false],
-        [42, w.number().or(w.string()), true],
-        ["", w.number().or(w.string()), true],
-        [undefined, w.number().or(w.undefined()), true],
-        ["", w.number().or(w.undefined()), false],
+        ["not in or", true, w.number().or(w.string()), false],
+        ["in or as first", 42, w.number().or(w.string()), true],
+        ["in or as second", "", w.number().or(w.string()), true],
+        ["undefined", undefined, w.number().or(w.undefined()), true],
+        [
+            "undefined without undefined value",
+            "",
+            w.number().or(w.undefined()),
+            false,
+        ],
     ];
 
-    for (const [input, s, expected] of cases) {
+    for (const [tcName, input, s, expected] of cases) {
         const got = s.validate(input);
-        tf.assertEq(got, expected, `Input = ${input}`);
+        tf.assertEq(got, expected, `Testcase = ${tcName} Input = ${input}`);
     }
 
     return true;
@@ -233,10 +238,11 @@ function testOr(tf) {
  */
 function testObject(tf) {
     /**
-     * @type [any, w.Schema<any>, boolean][]
+     * @type [string, any, w.Schema<any>, boolean][]
      */
     const cases = [
         [
+            "single-depth valid",
             { hello: "asdkj", world: 42 },
             w.object({
                 hello: w.string(),
@@ -245,6 +251,7 @@ function testObject(tf) {
             true,
         ],
         [
+            "single-depth invalid",
             { hello: "asdkj", world: "dklj" },
             w.object({
                 hello: w.string(),
@@ -253,6 +260,7 @@ function testObject(tf) {
             false,
         ],
         [
+            "invalid property name",
             { foo: "asdkj" },
             w.object({
                 hello: w.string(),
@@ -260,13 +268,7 @@ function testObject(tf) {
             false,
         ],
         [
-            { foo: "asdkj" },
-            w.object({
-                foo: w.string(),
-            }),
-            true,
-        ],
-        [
+            "valid multiple depth object",
             {
                 foo: "string",
                 bar: {
@@ -285,9 +287,13 @@ function testObject(tf) {
         ],
     ];
 
-    for (const [input, s, expected] of cases) {
+    for (const [tcName, input, s, expected] of cases) {
         const got = s.validate(input);
-        tf.assertEq(got, expected, `Input = ${JSON.stringify(input)}`);
+        tf.assertEq(
+            got,
+            expected,
+            `Testcase = ${tcName} Input = ${JSON.stringify(input)}`,
+        );
     }
 
     return true;
