@@ -4,7 +4,7 @@ What did you give me?
 
 ### About
 
-This is pure js library that is intended to be used to validate/narrow down data using jsdoc
+This is pure JavaScript library that is intended to be used to validate data and narrow down it's type using jsdoc
 
 ### Usage
 
@@ -13,7 +13,7 @@ Simply copy the library file `wdygm.js` in your project
 To validate an object:
 
 ```js
-// This object may be antything, with the most
+// This object may be anything, with the most
 // common source being JSON.parse() output
 const obj = {
     foo: "hello",
@@ -23,7 +23,7 @@ const obj = {
     },
 };
 
-// Define a schema of inteneded object
+// Define a schema for an object that we're expecting
 const schema = w.object({
     foo: w.string(),
     bar: w.object({
@@ -33,7 +33,7 @@ const schema = w.object({
 });
 
 if (schema.validate(obj)) {
-    // Take note that obj type is narrowed, to be of schema type
+    // Note that obj's type is narrowed, to be of schema type
     console.log("obj is valid");
 } else {
     console.log("obj is not valid");
@@ -41,7 +41,7 @@ if (schema.validate(obj)) {
 
 // Throwing alternative
 
-// Validate throwing returns the object with narrowed type or throws a validation error
+// `validateThrowing` returns the object with narrowed type or throws a validation error
 const validatedObj = schema.validateThrowing(obj);
 ```
 
